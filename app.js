@@ -19,16 +19,21 @@ let usuarios = [
 
 // READ
 app.get('/', (req, res) => {
-  res.send(`
-    <h1>Lista de usuarios</h1>
-    <ul>
-      ${usuarios
-        .map(
-          (usuario) =>
-            `<li>ID: ${usuario.id} | Nombre: ${usuario.nombre} | Edad: ${usuario.edad} | Lugar de Procedencia: ${usuario.lugarProcedencia}</li>`
-        )
-        .join('')}
-    </ul>
+    res.send(`
+      <h1>Lista de usuarios</h1>
+      <ul>
+        ${usuarios
+          .map(
+            (usuario) =>
+              `<li>ID: ${usuario.id} | Nombre: ${usuario.nombre} | Edad: ${usuario.edad} | Lugar de Procedencia: ${usuario.lugarProcedencia}
+                <form action="/usuarios/${usuario.nombre}" method="post">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit">Eliminar usuario</button>
+                </form>
+              </li>`
+          )
+          .join('')}
+      </ul>
 
     <form action="/usuarios" method="post">
       <label for="nombre">Nombre</label>
@@ -69,28 +74,19 @@ app.get('/usuarios/:nombre', (req, res) => {
   }
 });
 
-// PUT 
-app.put('/usuarios/:nombre', (req, res) => {
-  const index = usuarios.findIndex((u) => u.nombre === req.params.nombre);
-  if (index !== -1) {
-    usuarios[index] = {
-      id: usuarios[index].id,
-      nombre: req.body.nombre || usuarios[index].nombre,
-      edad: req.body.edad || usuarios[index].edad,
-      lugarProcedencia: req.body.lugarProcedencia || usuarios[index].lugarProcedencia,
-    };
-    res.send('Usuario actualizado exitosamente');
-  } else {
-    res.status(404).send('Usuario no encontrado');
-  }
-});
+
 
 // DELETE 
 app.delete('/usuarios/:nombre', (req, res) => {
-  usuarios = usuarios.filter((u) => u.nombre !== req.params.nombre);
-  res.send('Usuario eliminado exitosamente');
-});
+    const nombreUsuario = req.params.nombre;
+    usuarios = usuarios.filter((u) => u.nombre !== nombreUsuario);
+    res.send(`Usuario ${nombreUsuario} eliminado exitosamente`);
+  });
+
+
 
 app.listen(3000, () => {
   console.log('Express está escuchando en el puerto 3000');
 });
+
+
